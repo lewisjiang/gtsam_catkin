@@ -7,14 +7,29 @@ catkin_simple()
 
 include(ExternalProject)
 file(MAKE_DIRECTORY ${CATKIN_DEVEL_PREFIX}/include)
+# ExternalProject_Add(gtsam_src
+#  GIT_REPOSITORY https://bitbucket.org/gtborg/gtsam.git
+#  GIT_TAG 687ae3d2511b9c296af08ec2f2e717b0627a8d68
+#  UPDATE_COMMAND ""
+#  PATCH_COMMAND patch -p1 < ${CMAKE_SOURCE_DIR}/use_catkinized_metis.patch &&
+#                patch -p1 < ${CMAKE_SOURCE_DIR}/fix_warnings.patch
+#  CONFIGURE_COMMAND cmake -DCMAKE_INSTALL_PREFIX:PATH=${CATKIN_DEVEL_PREFIX} -DGTSAM_USE_SYSTEM_EIGEN=ON
+#  -DCMAKE_BUILD_TYPE=Release ../gtsam_src
+# BUILD_COMMAND make -j2
+#  INSTALL_COMMAND make install
+#)
+
 ExternalProject_Add(gtsam_src
+#  GIT_REPOSITORY https://github.com/borglab/gtsam.git
+#  GIT_TAG 52e8db60ddc9a34652de30ee05adc6ef6219f940
   GIT_REPOSITORY https://bitbucket.org/gtborg/gtsam.git
-  GIT_TAG 6b6a8495bb9148a415d98708707c10656b0b69a1
+  GIT_TAG 19707b88a1d5ebf29bd90cec700af02304eb53cf
   UPDATE_COMMAND ""
-  PATCH_COMMAND patch -p1 < ${CMAKE_CURRENT_SOURCE_DIR}/use_catkinized_metis.patch &&
-  patch -p1 < ${CMAKE_CURRENT_SOURCE_DIR}/fix_warnings.patch
+  PATCH_COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_SOURCE_DIR}/gtsam_rep/CMakeLists.txt <SOURCE_DIR>/CMakeLists.txt &&
+				${CMAKE_COMMAND} -E copy ${CMAKE_SOURCE_DIR}/gtsam_rep/gtsam/3rdparty/CMakeLists.txt <SOURCE_DIR>/gtsam/3rdparty/CMakeLists.txt
+
   CONFIGURE_COMMAND cmake -DCMAKE_INSTALL_PREFIX:PATH=${CATKIN_DEVEL_PREFIX} -DGTSAM_USE_SYSTEM_EIGEN=ON
-  -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER} -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER} ../gtsam_src
+  -DCMAKE_BUILD_TYPE=Release ../gtsam_src
   BUILD_COMMAND make -j2
   INSTALL_COMMAND make install
 )
